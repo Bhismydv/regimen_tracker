@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:regimen_tracker/data/repositories/log_repository_impl.dart';
-
+import '../../../../core/image_processing/image_service.dart';
 import '../../../../data/database/app_database.dart' as db;
 import '../../../../domain/entities/daily_log.dart';
 
@@ -100,17 +100,20 @@ class _CameraPageState extends State<CameraPage> {
                 onPressed: () async {
                   final image = await controller!.takePicture();
 
+                  final result = await ImageService.processImage(image.path);
+
                   final now = DateTime.now();
 
                   await logRepository.addDailyLog(
                     DailyLog(
                         date: DateTime(now.year, now.month, now.day),
-                        imagePath: image.path,
+                        imagePath: result.compressedPath,
+                      thumbnailPath: result.thumbnailPath,
                     ),
                   );
 
                   setState(() {
-                    lastImagePath = image.path;
+                    lastImagePath = result.compressedPath;
                   });
                 },
                 child: const Icon(Icons.camera),
