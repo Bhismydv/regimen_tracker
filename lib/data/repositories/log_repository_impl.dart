@@ -19,11 +19,13 @@ class LogRepositoryImpl implements LogRepository {
         imagePath: log.imagePath,
         thumbnailPath: Value(log.thumbnailPath),
         notes: Value(log.notes),
-        conditionTag:
-        Value(EnumMappers.skinTagToString(log.conditionTag)),
+        conditionTag: Value(
+          EnumMappers.skinTagToString(log.conditionTag),
+        ),
         irritationScore: Value(log.irritationScore),
         oilinessScore: Value(log.oilinessScore),
       ),
+      mode: InsertMode.insertOrReplace,
     );
   }
 
