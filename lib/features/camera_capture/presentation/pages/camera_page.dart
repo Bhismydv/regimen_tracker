@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:regimen_tracker/data/repositories/log_repository_impl.dart';
+import 'package:regimen_tracker/features/daily_log/presentation/pages/daily_log_page.dart';
 import '../../../../core/image_processing/image_service.dart';
 import '../../../../data/database/app_database.dart' as db;
 import '../../../../domain/entities/daily_log.dart';
@@ -34,7 +35,7 @@ class _CameraPageState extends State<CameraPage> {
     final cameras = await availableCameras();
 
     final frontCamera = cameras.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
+      (camera) => camera.lensDirection == CameraLensDirection.front,
     );
 
     controller = CameraController(
@@ -50,10 +51,10 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  Future<void> loadLastImage() async{
+  Future<void> loadLastImage() async {
     final logs = await logRepository.getLogs();
 
-    if(logs.isNotEmpty){
+    if (logs.isNotEmpty) {
       final lastLog = logs.last;
 
       setState(() {
@@ -71,9 +72,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     if (controller == null || !controller!.value.isInitialized) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -98,6 +97,21 @@ class _CameraPageState extends State<CameraPage> {
               padding: const EdgeInsets.all(20),
               child: FloatingActionButton(
                 onPressed: () async {
+                  final navigator = Navigator.of(context);
+
+                  final image = await controller!.takePicture();
+                  final result = await ImageService.processImage(image.path);
+
+                  if (!mounted) return;
+
+                  navigator.push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          DailyLogPage(imagePath: result.compressedPath),
+                    ),
+                  );
+                },
+                /* onPressed: () async {
                   final image = await controller!.takePicture();
 
                   final result = await ImageService.processImage(image.path);
@@ -115,7 +129,7 @@ class _CameraPageState extends State<CameraPage> {
                   setState(() {
                     lastImagePath = result.compressedPath;
                   });
-                },
+                },*/
                 child: const Icon(Icons.camera),
               ),
             ),
