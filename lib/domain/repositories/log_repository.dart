@@ -7,4 +7,5 @@ abstract class LogRepository {
 
   Future<DailyLog?> getLogByDate(DateTime date);
   Future<List<DailyLog>> getLogs();
+  Future<List<HabitLogEntry>> getEntriesByDate(DateTime date);
 }

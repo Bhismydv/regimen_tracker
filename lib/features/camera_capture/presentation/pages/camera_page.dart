@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:regimen_tracker/app/di/app_container.dart';
+import 'package:regimen_tracker/core/database/database_provider.dart';
 import 'package:regimen_tracker/data/repositories/log_repository_impl.dart';
 import 'package:regimen_tracker/features/daily_log/presentation/pages/daily_log_page.dart';
 import '../../../../core/image_processing/image_service.dart';
@@ -9,7 +11,9 @@ import '../../../../data/database/app_database.dart' as db;
 import '../../../../domain/entities/daily_log.dart';
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({super.key});
+  final AppContainer container;
+
+  const CameraPage({super.key, required this.container});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -19,14 +23,11 @@ class _CameraPageState extends State<CameraPage> {
   CameraController? controller;
   String? lastImagePath;
   late LogRepositoryImpl logRepository;
-  late db.AppDatabase database;
   @override
   void initState() {
     super.initState();
     initCamera();
-
-    database = db.AppDatabase();
-    logRepository = LogRepositoryImpl(database);
+    logRepository = widget.container.logRepository;
 
     loadLastImage();
   }
@@ -97,39 +98,20 @@ class _CameraPageState extends State<CameraPage> {
               padding: const EdgeInsets.all(20),
               child: FloatingActionButton(
                 onPressed: () async {
-                  final navigator = Navigator.of(context);
-
                   final image = await controller!.takePicture();
                   final result = await ImageService.processImage(image.path);
 
                   if (!mounted) return;
 
-                  navigator.push(
+                  Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) =>
-                          DailyLogPage(imagePath: result.compressedPath),
+                      builder: (_) => DailyLogPage(
+                        imagePath: result.compressedPath,
+                        container: widget.container,
+                      ),
                     ),
                   );
                 },
-                /* onPressed: () async {
-                  final image = await controller!.takePicture();
-
-                  final result = await ImageService.processImage(image.path);
-
-                  final now = DateTime.now();
-
-                  await logRepository.addDailyLog(
-                    DailyLog(
-                        date: DateTime(now.year, now.month, now.day),
-                        imagePath: result.compressedPath,
-                      thumbnailPath: result.thumbnailPath,
-                    ),
-                  );
-
-                  setState(() {
-                    lastImagePath = result.compressedPath;
-                  });
-                },*/
                 child: const Icon(Icons.camera),
               ),
             ),

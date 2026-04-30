@@ -83,4 +83,20 @@ class LogRepositoryImpl implements LogRepository {
       );
     }).toList();
   }
+
+  @override
+  Future<List<HabitLogEntry>> getEntriesByDate(DateTime date) async {
+    final rows = await (database.select(database.habitLogEntries)
+      ..where((tbl) => tbl.logDate.equals(date)))
+        .get();
+
+    return rows.map((row) {
+      return HabitLogEntry(
+        id: row.id,
+        habitId: row.habitId,
+        logDate: row.logDate,
+        value: row.value,
+      );
+    }).toList();
+  }
 }

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:regimen_tracker/app/di/app_container.dart';
 import 'package:regimen_tracker/features/camera_capture/presentation/pages/camera_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  final container = AppContainer();
+
+  runApp(MyApp(container: container));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppContainer container;
+
+  const MyApp({super.key, required this.container});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +21,7 @@ class MyApp extends StatelessWidget {
 
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const CameraPage(),
+      home: CameraPage(container: container),
     );
   }
 }
