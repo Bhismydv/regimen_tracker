@@ -21,6 +21,7 @@ class HabitRepositoryImpl implements HabitRepository {
             habit.measurementType),
         intensityScaleMax: habit.intensityScaleMax,
         isActive: Value(habit.isActive),
+        colorValue: habit.colorValue,
       ),
     );
   }
@@ -39,6 +40,7 @@ class HabitRepositoryImpl implements HabitRepository {
         EnumMappers.stringToMeasurementType(row.measurementType),
         intensityScaleMax: row.intensityScaleMax,
         isActive: row.isActive,
+        colorValue: row.colorValue,
       );
     }).toList();
   }

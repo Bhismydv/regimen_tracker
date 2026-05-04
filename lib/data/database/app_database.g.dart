@@ -74,6 +74,17 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _colorValueMeta = const VerificationMeta(
+    'colorValue',
+  );
+  @override
+  late final GeneratedColumn<int> colorValue = GeneratedColumn<int>(
+    'color_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -82,6 +93,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     measurementType,
     intensityScaleMax,
     isActive,
+    colorValue,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -144,6 +156,14 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
       );
     }
+    if (data.containsKey('color_value')) {
+      context.handle(
+        _colorValueMeta,
+        colorValue.isAcceptableOrUnknown(data['color_value']!, _colorValueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorValueMeta);
+    }
     return context;
   }
 
@@ -177,6 +197,10 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
       )!,
+      colorValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color_value'],
+      )!,
     );
   }
 
@@ -193,6 +217,7 @@ class Habit extends DataClass implements Insertable<Habit> {
   final String measurementType;
   final int intensityScaleMax;
   final bool isActive;
+  final int colorValue;
   const Habit({
     required this.id,
     required this.name,
@@ -200,6 +225,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     required this.measurementType,
     required this.intensityScaleMax,
     required this.isActive,
+    required this.colorValue,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -210,6 +236,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     map['measurement_type'] = Variable<String>(measurementType);
     map['intensity_scale_max'] = Variable<int>(intensityScaleMax);
     map['is_active'] = Variable<bool>(isActive);
+    map['color_value'] = Variable<int>(colorValue);
     return map;
   }
 
@@ -221,6 +248,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       measurementType: Value(measurementType),
       intensityScaleMax: Value(intensityScaleMax),
       isActive: Value(isActive),
+      colorValue: Value(colorValue),
     );
   }
 
@@ -236,6 +264,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       measurementType: serializer.fromJson<String>(json['measurementType']),
       intensityScaleMax: serializer.fromJson<int>(json['intensityScaleMax']),
       isActive: serializer.fromJson<bool>(json['isActive']),
+      colorValue: serializer.fromJson<int>(json['colorValue']),
     );
   }
   @override
@@ -248,6 +277,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       'measurementType': serializer.toJson<String>(measurementType),
       'intensityScaleMax': serializer.toJson<int>(intensityScaleMax),
       'isActive': serializer.toJson<bool>(isActive),
+      'colorValue': serializer.toJson<int>(colorValue),
     };
   }
 
@@ -258,6 +288,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     String? measurementType,
     int? intensityScaleMax,
     bool? isActive,
+    int? colorValue,
   }) => Habit(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -265,6 +296,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     measurementType: measurementType ?? this.measurementType,
     intensityScaleMax: intensityScaleMax ?? this.intensityScaleMax,
     isActive: isActive ?? this.isActive,
+    colorValue: colorValue ?? this.colorValue,
   );
   Habit copyWithCompanion(HabitsCompanion data) {
     return Habit(
@@ -278,6 +310,9 @@ class Habit extends DataClass implements Insertable<Habit> {
           ? data.intensityScaleMax.value
           : this.intensityScaleMax,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      colorValue: data.colorValue.present
+          ? data.colorValue.value
+          : this.colorValue,
     );
   }
 
@@ -289,7 +324,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           ..write('category: $category, ')
           ..write('measurementType: $measurementType, ')
           ..write('intensityScaleMax: $intensityScaleMax, ')
-          ..write('isActive: $isActive')
+          ..write('isActive: $isActive, ')
+          ..write('colorValue: $colorValue')
           ..write(')'))
         .toString();
   }
@@ -302,6 +338,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     measurementType,
     intensityScaleMax,
     isActive,
+    colorValue,
   );
   @override
   bool operator ==(Object other) =>
@@ -312,7 +349,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           other.category == this.category &&
           other.measurementType == this.measurementType &&
           other.intensityScaleMax == this.intensityScaleMax &&
-          other.isActive == this.isActive);
+          other.isActive == this.isActive &&
+          other.colorValue == this.colorValue);
 }
 
 class HabitsCompanion extends UpdateCompanion<Habit> {
@@ -322,6 +360,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<String> measurementType;
   final Value<int> intensityScaleMax;
   final Value<bool> isActive;
+  final Value<int> colorValue;
   final Value<int> rowid;
   const HabitsCompanion({
     this.id = const Value.absent(),
@@ -330,6 +369,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     this.measurementType = const Value.absent(),
     this.intensityScaleMax = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.colorValue = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   HabitsCompanion.insert({
@@ -339,12 +379,14 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     required String measurementType,
     required int intensityScaleMax,
     this.isActive = const Value.absent(),
+    required int colorValue,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
        category = Value(category),
        measurementType = Value(measurementType),
-       intensityScaleMax = Value(intensityScaleMax);
+       intensityScaleMax = Value(intensityScaleMax),
+       colorValue = Value(colorValue);
   static Insertable<Habit> custom({
     Expression<String>? id,
     Expression<String>? name,
@@ -352,6 +394,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Expression<String>? measurementType,
     Expression<int>? intensityScaleMax,
     Expression<bool>? isActive,
+    Expression<int>? colorValue,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -361,6 +404,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       if (measurementType != null) 'measurement_type': measurementType,
       if (intensityScaleMax != null) 'intensity_scale_max': intensityScaleMax,
       if (isActive != null) 'is_active': isActive,
+      if (colorValue != null) 'color_value': colorValue,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -372,6 +416,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Value<String>? measurementType,
     Value<int>? intensityScaleMax,
     Value<bool>? isActive,
+    Value<int>? colorValue,
     Value<int>? rowid,
   }) {
     return HabitsCompanion(
@@ -381,6 +426,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       measurementType: measurementType ?? this.measurementType,
       intensityScaleMax: intensityScaleMax ?? this.intensityScaleMax,
       isActive: isActive ?? this.isActive,
+      colorValue: colorValue ?? this.colorValue,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -406,6 +452,9 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
+    if (colorValue.present) {
+      map['color_value'] = Variable<int>(colorValue.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -421,6 +470,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
           ..write('measurementType: $measurementType, ')
           ..write('intensityScaleMax: $intensityScaleMax, ')
           ..write('isActive: $isActive, ')
+          ..write('colorValue: $colorValue, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1281,6 +1331,7 @@ typedef $$HabitsTableCreateCompanionBuilder =
       required String measurementType,
       required int intensityScaleMax,
       Value<bool> isActive,
+      required int colorValue,
       Value<int> rowid,
     });
 typedef $$HabitsTableUpdateCompanionBuilder =
@@ -1291,6 +1342,7 @@ typedef $$HabitsTableUpdateCompanionBuilder =
       Value<String> measurementType,
       Value<int> intensityScaleMax,
       Value<bool> isActive,
+      Value<int> colorValue,
       Value<int> rowid,
     });
 
@@ -1358,6 +1410,11 @@ class $$HabitsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get colorValue => $composableBuilder(
+    column: $table.colorValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> habitLogEntriesRefs(
     Expression<bool> Function($$HabitLogEntriesTableFilterComposer f) f,
   ) {
@@ -1422,6 +1479,11 @@ class $$HabitsTableOrderingComposer
     column: $table.isActive,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get colorValue => $composableBuilder(
+    column: $table.colorValue,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$HabitsTableAnnotationComposer
@@ -1454,6 +1516,11 @@ class $$HabitsTableAnnotationComposer
 
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get colorValue => $composableBuilder(
+    column: $table.colorValue,
+    builder: (column) => column,
+  );
 
   Expression<T> habitLogEntriesRefs<T extends Object>(
     Expression<T> Function($$HabitLogEntriesTableAnnotationComposer a) f,
@@ -1515,6 +1582,7 @@ class $$HabitsTableTableManager
                 Value<String> measurementType = const Value.absent(),
                 Value<int> intensityScaleMax = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
+                Value<int> colorValue = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitsCompanion(
                 id: id,
@@ -1523,6 +1591,7 @@ class $$HabitsTableTableManager
                 measurementType: measurementType,
                 intensityScaleMax: intensityScaleMax,
                 isActive: isActive,
+                colorValue: colorValue,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1533,6 +1602,7 @@ class $$HabitsTableTableManager
                 required String measurementType,
                 required int intensityScaleMax,
                 Value<bool> isActive = const Value.absent(),
+                required int colorValue,
                 Value<int> rowid = const Value.absent(),
               }) => HabitsCompanion.insert(
                 id: id,
@@ -1541,6 +1611,7 @@ class $$HabitsTableTableManager
                 measurementType: measurementType,
                 intensityScaleMax: intensityScaleMax,
                 isActive: isActive,
+                colorValue: colorValue,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

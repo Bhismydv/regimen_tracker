@@ -14,6 +14,8 @@ class Habits extends Table {
 
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
 
+  IntColumn get colorValue => integer()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

@@ -46,10 +46,10 @@ class _DailyLogPageState extends State<DailyLogPage> {
   }
 
   Future<void> loadHabits() async {
-    final result = await habitRepository.getAllHabits();
+    final existing = await habitRepository.getAllHabits();
 
-    if (result.isEmpty) {
-      await habitRepository.addHabit(
+    if (existing.isEmpty) {
+      final defaultHabits = [
         domain.Habit(
           id: "1",
           name: "Exfoliation",
@@ -57,8 +57,40 @@ class _DailyLogPageState extends State<DailyLogPage> {
           measurementType: MeasurementType.scale,
           intensityScaleMax: 10,
           isActive: true,
+          colorValue: 0xFFE57373, // red
         ),
-      );
+        domain.Habit(
+          id: "2",
+          name: "Hydration",
+          category: HabitCategory.hydration,
+          measurementType: MeasurementType.scale,
+          intensityScaleMax: 10,
+          isActive: true,
+          colorValue: 0xFF64B5F6, // blue
+        ),
+        domain.Habit(
+          id: "3",
+          name: "Retinol",
+          category: HabitCategory.treatment,
+          measurementType: MeasurementType.scale,
+          intensityScaleMax: 10,
+          isActive: true,
+          colorValue: 0xFFBA68C8, // purple
+        ),
+        domain.Habit(
+          id: "4",
+          name: "Sunscreen",
+          category: HabitCategory.treatment,
+          measurementType: MeasurementType.scale,
+          intensityScaleMax: 10,
+          isActive: true,
+          colorValue: 0xFFFFD54F, // yellow
+        ),
+      ];
+
+      for (final habit in defaultHabits) {
+        await habitRepository.addHabit(habit);
+      }
     }
 
     final updated = await habitRepository.getAllHabits();
@@ -113,7 +145,7 @@ class _DailyLogPageState extends State<DailyLogPage> {
                     // ✅ 2. SAVE HABIT ENTRIES
                     final entries = selectedHabits.entries.map((e) {
                       return HabitLogEntry(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        id: "${DateTime.now().millisecondsSinceEpoch}_${e.key}",
                         habitId: e.key,
                         logDate: logDate,
                         value: e.value,
@@ -134,7 +166,7 @@ class _DailyLogPageState extends State<DailyLogPage> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => TimelinePage(
-                          cubit: TimelineCubit(widget.container.logRepository),
+                          cubit: TimelineCubit(widget.container.logRepository, widget.container.habitRepository),
                         ),
                       ),
                     );
@@ -151,7 +183,7 @@ class _DailyLogPageState extends State<DailyLogPage> {
   Widget buildHabitTile(domain.Habit habit) {
     return ListTile(
       title: Text(habit.name),
-      subtitle: Text(habit.category.name),
+      subtitle: Text("${habit.category.name} • ${selectedHabits[habit.id]?.toInt() ?? 0}"),
         trailing: SizedBox(
           width: 150,
           child: Slider(

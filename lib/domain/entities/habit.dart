@@ -8,6 +8,7 @@ class Habit {
   final MeasurementType measurementType;
   final int intensityScaleMax;
   final bool isActive;
+  final int colorValue;
 
   Habit({
     required this.id,
@@ -16,5 +17,6 @@ class Habit {
     required this.measurementType,
     required this.intensityScaleMax,
     required this.isActive,
+    required this.colorValue
   });
 }
