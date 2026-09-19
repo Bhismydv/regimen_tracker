@@ -5,7 +5,7 @@ class DailyLog {
   final String imagePath;
   final String? thumbnailPath;
   final String? notes;
-  late SkinConditionTag? conditionTag;
+  final SkinConditionTag? conditionTag;
   final double? irritationScore;
   final double? oilinessScore;
 

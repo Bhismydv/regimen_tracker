@@ -1,6 +1,1 @@
-enum ClimateType {
-  humid,
-  dry,
-  cold,
-  hot,
-}
+enum ClimateType { humid, dry, cold, hot }

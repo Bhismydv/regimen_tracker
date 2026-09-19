@@ -12,18 +12,28 @@ class HabitRepositoryImpl implements HabitRepository {
 
   @override
   Future<void> addHabit(domain.Habit habit) async {
-    await database.into(database.habits).insert(
-      db.HabitsCompanion.insert(
-        id: habit.id,
-        name: habit.name,
-        category: EnumMappers.habitCategoryToString(habit.category),
-        measurementType: EnumMappers.measurementTypeToString(
-            habit.measurementType),
-        intensityScaleMax: habit.intensityScaleMax,
-        isActive: Value(habit.isActive),
-        colorValue: habit.colorValue,
-      ),
-    );
+    await database
+        .into(database.habits)
+        .insert(
+          db.HabitsCompanion.insert(
+            id: habit.id,
+            name: habit.name,
+            category: EnumMappers.habitCategoryToString(habit.category),
+            measurementType: EnumMappers.measurementTypeToString(
+              habit.measurementType,
+            ),
+            intensityScaleMax: habit.intensityScaleMax,
+            isActive: Value(habit.isActive),
+            colorValue: habit.colorValue,
+          ),
+        );
+  }
+
+  @override
+  Future<void> updateHabit(domain.Habit habit) async {
+    await database
+        .into(database.habits)
+        .insertOnConflictUpdate(_companion(habit));
   }
 
   @override
@@ -34,14 +44,28 @@ class HabitRepositoryImpl implements HabitRepository {
       return domain.Habit(
         id: row.id,
         name: row.name,
-        category:
-        EnumMappers.stringToHabitCategory(row.category),
-        measurementType:
-        EnumMappers.stringToMeasurementType(row.measurementType),
+        category: EnumMappers.stringToHabitCategory(row.category),
+        measurementType: EnumMappers.stringToMeasurementType(
+          row.measurementType,
+        ),
         intensityScaleMax: row.intensityScaleMax,
         isActive: row.isActive,
         colorValue: row.colorValue,
       );
     }).toList();
+  }
+
+  db.HabitsCompanion _companion(domain.Habit habit) {
+    return db.HabitsCompanion.insert(
+      id: habit.id,
+      name: habit.name,
+      category: EnumMappers.habitCategoryToString(habit.category),
+      measurementType: EnumMappers.measurementTypeToString(
+        habit.measurementType,
+      ),
+      intensityScaleMax: habit.intensityScaleMax,
+      isActive: Value(habit.isActive),
+      colorValue: habit.colorValue,
+    );
   }
 }

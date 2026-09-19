@@ -8,14 +8,12 @@ class AppContainer {
   late final HabitRepositoryImpl habitRepository;
   late final LogRepositoryImpl logRepository;
 
-  AppContainer() {
-    database = AppDatabase();
+  AppContainer({AppDatabase? database}) {
+    this.database = database ?? AppDatabase();
 
-    habitRepository = HabitRepositoryImpl(database);
-    logRepository = LogRepositoryImpl(database);
+    habitRepository = HabitRepositoryImpl(this.database);
+    logRepository = LogRepositoryImpl(this.database);
   }
 
-  void dispose() {
-    database.close();
-  }
+  Future<void> dispose() => database.close();
 }

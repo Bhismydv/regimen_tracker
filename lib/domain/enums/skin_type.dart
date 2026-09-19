@@ -1,7 +1,1 @@
-enum SkinType {
-  oily,
-  dry,
-  combination,
-  sensitive,
-  normal,
-}
+enum SkinType { oily, dry, combination, sensitive, normal }

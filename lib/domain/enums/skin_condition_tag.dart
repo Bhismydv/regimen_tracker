@@ -1,7 +1,1 @@
-enum SkinConditionTag {
-  clear,
-  irritated,
-  breakout,
-  dry,
-  oily,
-}
+enum SkinConditionTag { clear, irritated, breakout, dry, oily }

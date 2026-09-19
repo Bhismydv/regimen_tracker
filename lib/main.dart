@@ -1,28 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:regimen_tracker/app/app.dart';
 import 'package:regimen_tracker/app/di/app_container.dart';
-import 'package:regimen_tracker/features/camera_capture/presentation/pages/camera_page.dart';
+import 'package:regimen_tracker/app/theme/theme_colors.dart';
 
 void main() {
-  final container = AppContainer();
-
-  runApp(MyApp(container: container));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp(container: AppContainer()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final AppContainer container;
 
   const MyApp({super.key, required this.container});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void dispose() {
+    unawaited(widget.container.dispose());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: CameraPage(container: container),
+      title: 'Regimen Tracker',
+      debugShowCheckedModeBanner: false,
+      theme: RegimenTheme.light(),
+      home: AppShell(container: widget.container),
     );
   }
 }
-

@@ -1,39 +1,72 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:regimen_tracker/data/repositories/habit_repository_impl.dart';
-import 'package:regimen_tracker/data/repositories/log_repository_impl.dart';
+import 'package:regimen_tracker/domain/repositories/habit_repository.dart';
+import 'package:regimen_tracker/domain/repositories/log_repository.dart';
+import 'package:regimen_tracker/features/timeline/presentation/cubit/timeline_state.dart';
 import 'package:regimen_tracker/features/timeline/presentation/widgets/timeline_item.dart';
 
-class TimelineCubit extends Cubit<List<TimelineItem>> {
-  final LogRepositoryImpl logRepository;
-  final HabitRepositoryImpl habitRepository;
+class TimelineCubit extends Cubit<TimelineState> {
+  final LogRepository logRepository;
+  final HabitRepository habitRepository;
 
-  TimelineCubit(this.logRepository, this.habitRepository) : super([]);
+  TimelineCubit(this.logRepository, this.habitRepository)
+    : super(const TimelineInitial());
 
   Future<void> loadTimeline() async {
-    final logs = await logRepository.getLogs();
-    logs.sort((a, b) => a.date.compareTo(b.date));
+    emit(const TimelineLoading());
+    try {
+      final timelineLogs = await logRepository.getTimelineLogs();
+      if (timelineLogs.isEmpty) {
+        emit(const TimelineEmpty());
+        return;
+      }
 
-    // ✅ load once
-    final habits = await habitRepository.getAllHabits();
-    final habitMap = { for (var h in habits) h.id: h };
+      final habits = (await habitRepository.getAllHabits())
+          .where((habit) => habit.isActive)
+          .toList();
+      final usedHabitIds = timelineLogs
+          .expand((log) => log.habitEntries)
+          .map((entry) => entry.habitId)
+          .toSet();
+      final initiallyVisible = habits
+          .where((habit) => usedHabitIds.contains(habit.id))
+          .map((habit) => habit.id)
+          .toSet();
 
-    List<TimelineItem> items = [];
-
-    for (final log in logs) {
-      final entries =
-      await logRepository.getEntriesByDate(log.date);
-
-      items.add(
-        TimelineItem(
-          date: log.date,
-          imagePath: log.imagePath,
-          thumbnailPath: log.thumbnailPath,
-          habits: entries,
-          habitMap: habitMap,
+      emit(
+        TimelineLoaded(
+          items: timelineLogs.map(TimelineItem.fromTimelineLog).toList(),
+          habits: habits,
+          visibleHabitIds: initiallyVisible,
         ),
       );
+    } catch (error) {
+      emit(TimelineFailure('Could not load the timeline: $error'));
     }
+  }
 
-    emit(items);
+  void toggleHabit(String habitId) {
+    final current = state;
+    if (current is! TimelineLoaded) return;
+
+    final nextVisible = {...current.visibleHabitIds};
+    if (!nextVisible.remove(habitId)) {
+      nextVisible.add(habitId);
+    }
+    emit(current.copyWith(visibleHabitIds: nextVisible));
+  }
+
+  void toggleDate(DateTime date) {
+    final current = state;
+    if (current is! TimelineLoaded) return;
+
+    final nextDates = [...current.selectedDates];
+    final existingIndex = nextDates.indexOf(date);
+    if (existingIndex >= 0) {
+      nextDates.removeAt(existingIndex);
+    } else {
+      if (nextDates.length == 2) nextDates.removeAt(0);
+      nextDates.add(date);
+    }
+    emit(current.copyWith(selectedDates: nextDates));
   }
 }

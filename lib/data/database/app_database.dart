@@ -10,18 +10,29 @@ import 'tables/habit_log_entries_table.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(
-  tables: [Habits, DailyLogs, HabitLogEntries],
-)
+@DriftDatabase(tables: [Habits, DailyLogs, HabitLogEntries])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
+  AppDatabase.forTesting(super.e);
 
   @override
   int get schemaVersion => 1;
 
-// Future migrations go here
-
-
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migrator) => migrator.createAll(),
+    onUpgrade: (migrator, from, to) async {
+      // Add explicit, sequential migration calls here before increasing
+      // schemaVersion. Failing closed prevents incompatible databases from
+      // being opened silently in a release build.
+      if (from != to) {
+        throw StateError('Missing database migration from $from to $to');
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

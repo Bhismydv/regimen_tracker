@@ -1,6 +1,1 @@
-enum HabitCategory {
-  exfoliation,
-  hydration,
-  treatment,
-  lifestyle,
-}
+enum HabitCategory { exfoliation, hydration, treatment, lifestyle }

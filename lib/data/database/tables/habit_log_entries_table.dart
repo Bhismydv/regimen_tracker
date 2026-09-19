@@ -5,11 +5,11 @@ import 'habits_table.dart';
 class HabitLogEntries extends Table {
   TextColumn get id => text()();
 
-  TextColumn get habitId => text()
-      .references(Habits, #id, onDelete: KeyAction.cascade)();
+  TextColumn get habitId =>
+      text().references(Habits, #id, onDelete: KeyAction.cascade)();
 
-  DateTimeColumn get logDate => dateTime()
-      .references(DailyLogs, #date, onDelete: KeyAction.cascade)();
+  DateTimeColumn get logDate =>
+      dateTime().references(DailyLogs, #date, onDelete: KeyAction.cascade)();
 
   RealColumn get value => real()();
 
