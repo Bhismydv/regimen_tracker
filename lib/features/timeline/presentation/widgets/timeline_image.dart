@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:regimen_tracker/app/theme/theme_colors.dart';
 import 'package:regimen_tracker/domain/entities/habit.dart';
 import 'package:regimen_tracker/features/timeline/presentation/widgets/timeline_item.dart';
 
@@ -40,6 +41,7 @@ class TimelineChart extends StatelessWidget {
                 painter: _TimelinePainter(
                   items: items,
                   visibleHabits: visibleHabits,
+                  gridColor: Theme.of(context).colorScheme.outlineVariant,
                 ),
               ),
             ),
@@ -139,13 +141,18 @@ class _TimelineThumbnail extends StatelessWidget {
 class _TimelinePainter extends CustomPainter {
   final List<TimelineItem> items;
   final List<Habit> visibleHabits;
+  final Color gridColor;
 
-  _TimelinePainter({required this.items, required this.visibleHabits});
+  _TimelinePainter({
+    required this.items,
+    required this.visibleHabits,
+    required this.gridColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.08)
+      ..color = gridColor.withValues(alpha: 0.65)
       ..strokeWidth = 1;
     final firstTrackY = 132.0;
 
@@ -187,13 +194,13 @@ class _TimelinePainter extends CustomPainter {
       canvas,
       graphTop,
       items.map((item) => item.irritationScore).toList(),
-      const Color(0xFFE53935),
+      RegimenPalette.irritation,
     );
     _drawOutcomeLine(
       canvas,
       graphTop,
       items.map((item) => item.oilinessScore).toList(),
-      const Color(0xFF1E88E5),
+      RegimenPalette.oiliness,
     );
   }
 

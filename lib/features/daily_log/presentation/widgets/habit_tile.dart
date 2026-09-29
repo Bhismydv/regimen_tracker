@@ -21,15 +21,15 @@ class HabitTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 10, 12, 10),
         child: switch (habit.measurementType) {
-          MeasurementType.binary => _buildBinary(),
-          MeasurementType.scale => _buildSlider('Intensity', ''),
-          MeasurementType.duration => _buildSlider('Duration', ' min'),
+          MeasurementType.binary => _buildBinary(context),
+          MeasurementType.scale => _buildSlider(context, 'Intensity', ''),
+          MeasurementType.duration => _buildSlider(context, 'Duration', ' min'),
         },
       ),
     );
   }
 
-  Widget _buildBinary() {
+  Widget _buildBinary(BuildContext context) {
     final enabled = value == 1;
     return Row(
       children: [
@@ -42,7 +42,9 @@ class HabitTile extends StatelessWidget {
               Text(habit.name),
               Text(
                 habit.category.name,
-                style: const TextStyle(color: Colors.black54),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -55,7 +57,11 @@ class HabitTile extends StatelessWidget {
     );
   }
 
-  Widget _buildSlider(String measurementLabel, String suffix) {
+  Widget _buildSlider(
+    BuildContext context,
+    String measurementLabel,
+    String suffix,
+  ) {
     final steps = habit.intensityScaleMax < 1 ? 1 : habit.intensityScaleMax;
     final maximum = steps.toDouble();
     final currentValue = (value ?? 0).clamp(0, maximum).toDouble();
@@ -73,7 +79,9 @@ class HabitTile extends StatelessWidget {
         ),
         Text(
           '${habit.category.name} · $measurementLabel',
-          style: const TextStyle(color: Colors.black54),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         Slider(
           value: currentValue,

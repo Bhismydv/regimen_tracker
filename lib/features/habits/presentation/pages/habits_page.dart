@@ -131,17 +131,18 @@ class _HabitsPageState extends State<HabitsPage> {
   }
 
   Future<void> renameHabit(Habit habit) async {
-    final controller = TextEditingController(text: habit.name);
+    var editedName = habit.name;
     final name = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Rename habit'),
-        content: TextField(
+        content: TextFormField(
           key: const Key('rename-habit-field'),
-          controller: controller,
+          initialValue: habit.name,
           autofocus: true,
           textCapitalization: TextCapitalization.sentences,
           decoration: const InputDecoration(labelText: 'Habit name'),
+          onChanged: (value) => editedName = value,
         ),
         actions: [
           TextButton(
@@ -149,14 +150,12 @@ class _HabitsPageState extends State<HabitsPage> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () =>
-                Navigator.pop(dialogContext, controller.text.trim()),
+            onPressed: () => Navigator.pop(dialogContext, editedName.trim()),
             child: const Text('Save'),
           ),
         ],
       ),
     );
-    controller.dispose();
     if (name == null || name.isEmpty || name == habit.name) return;
 
     try {

@@ -32,6 +32,8 @@ class _MyAppState extends State<MyApp> {
       title: 'Regimen Tracker',
       debugShowCheckedModeBanner: false,
       theme: RegimenTheme.light(),
+      darkTheme: RegimenTheme.dark(),
+      themeMode: ThemeMode.system,
       home: AppShell(container: widget.container),
     );
   }

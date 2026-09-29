@@ -181,7 +181,10 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text('Align today\'s photo'),
+        title: const Text(
+          'Align today\'s photo',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SafeArea(child: _buildBody()),
     );

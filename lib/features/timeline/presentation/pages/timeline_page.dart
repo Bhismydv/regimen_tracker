@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:regimen_tracker/app/theme/theme_colors.dart';
 import 'package:regimen_tracker/features/comparison/presentation/pages/comparison_page.dart';
 import 'package:regimen_tracker/features/insights/presentation/cubit/insights_cubit.dart';
 import 'package:regimen_tracker/features/insights/presentation/pages/insights_page.dart';
@@ -125,9 +126,9 @@ class _TimelinePageState extends State<TimelinePage> {
           padding: EdgeInsets.fromLTRB(16, 10, 16, 2),
           child: Row(
             children: [
-              _LegendDot(color: Color(0xFFE53935), label: 'Irritation'),
+              _LegendDot(color: RegimenPalette.irritation, label: 'Irritation'),
               SizedBox(width: 16),
-              _LegendDot(color: Color(0xFF1E88E5), label: 'Oiliness'),
+              _LegendDot(color: RegimenPalette.oiliness, label: 'Oiliness'),
             ],
           ),
         ),

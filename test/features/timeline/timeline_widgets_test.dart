@@ -64,14 +64,18 @@ void main() {
       ),
     );
 
-    Align reveal() =>
-        tester.widget<Align>(find.byKey(const Key('before-image-reveal')));
+    Rect revealedArea() {
+      final clip = tester.widget<ClipRect>(
+        find.byKey(const Key('before-image-reveal')),
+      );
+      return clip.clipper!.getClip(const Size.square(300));
+    }
 
-    expect(reveal().widthFactor, 0.5);
+    expect(revealedArea().width, 150);
     final slider = find.byKey(const Key('image-comparison-slider'));
     final topLeft = tester.getTopLeft(slider);
     await tester.tapAt(topLeft + const Offset(240, 150));
     await tester.pump();
-    expect(reveal().widthFactor, closeTo(0.8, 0.02));
+    expect(revealedArea().width, closeTo(240, 1));
   });
 }

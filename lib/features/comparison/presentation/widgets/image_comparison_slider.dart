@@ -39,16 +39,9 @@ class _ImageComparisonSliderState extends State<ImageComparisonSlider> {
                 children: [
                   _ComparisonImage(path: widget.afterImagePath),
                   ClipRect(
-                    child: Align(
-                      key: const Key('before-image-reveal'),
-                      alignment: Alignment.centerLeft,
-                      widthFactor: reveal,
-                      child: SizedBox(
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                        child: _ComparisonImage(path: widget.beforeImagePath),
-                      ),
-                    ),
+                    key: const Key('before-image-reveal'),
+                    clipper: _RevealClipper(reveal),
+                    child: _ComparisonImage(path: widget.beforeImagePath),
                   ),
                   Positioned(
                     left: constraints.maxWidth * reveal - 1.5,
@@ -87,6 +80,22 @@ class _ImageComparisonSliderState extends State<ImageComparisonSlider> {
 
   void updateReveal(double horizontalPosition, double width) {
     setState(() => reveal = (horizontalPosition / width).clamp(0.0, 1.0));
+  }
+}
+
+class _RevealClipper extends CustomClipper<Rect> {
+  final double reveal;
+
+  const _RevealClipper(this.reveal);
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 0, size.width * reveal, size.height);
+  }
+
+  @override
+  bool shouldReclip(covariant _RevealClipper oldClipper) {
+    return oldClipper.reveal != reveal;
   }
 }
 

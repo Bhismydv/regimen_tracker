@@ -76,6 +76,32 @@ void main() {
     expect(stored, hasLength(defaultHabits.length));
   });
 
+  testWidgets('habit rename survives the dialog closing animation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(home: HabitsPage(container: container)),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Physical scrub'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('rename-habit-field')),
+      'Gentle scrub',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Gentle scrub'), findsOneWidget);
+    final stored = await container.habitRepository.getAllHabits();
+    expect(
+      stored.singleWhere((habit) => habit.id == 'physical_scrub').name,
+      'Gentle scrub',
+    );
+  });
+
   testWidgets('app shell navigates between non-camera destinations', (
     tester,
   ) async {
